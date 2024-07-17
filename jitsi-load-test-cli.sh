@@ -136,7 +136,7 @@ while [ "$1" != "" ]; do
         --token )             shift
                               TOKEN=$1
                               ;;
-        --Last-n )            shift
+        --last-n )            shift
                               LAST_N=$1
                               ;;
         * )                   usage
