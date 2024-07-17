@@ -7,6 +7,8 @@ By default the media used for the video publising is sored in media folder and i
 
 ## Features
 
+
+
 - Specify room and instance for the load test
 - Configure the number of video and audio publishers
 - Set the number of subscribers
@@ -56,8 +58,12 @@ Run the script with the required options:
 ### Example
 
 ```sh
-./jitsi-load_test-cli.sh --room "TestRoom" --instance "Instance1" --video-publishers 10 --audio-publishers 5 --subscribers 20 --duration 60
+./jitsi-load-test-cli.sh --room "TestRoom" --instance "Instance1" --video-publishers 6 --audio-publishers 5 --subscribers 10 --duration 60 --token XXXXXXX
 ```
+
+Result view from a browser user : 
+![Test result view from a browser](docs/test.png)
+
 
 ### Options
 
