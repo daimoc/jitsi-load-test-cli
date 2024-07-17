@@ -57,7 +57,8 @@ run_agent(){
         NICK=$TYPE"_$i"
         sleep $WAIT_TIME
         docker run \
-        --mount type=bind,source="$(pwd)"/media,target=/media \
+        --net=host \
+        --mount type=bind,source="$(pwd)"/media,target=/media,ro \
         $GST_IMAGE \
         --video-codec=$VIDEO_CODEC \
         --nick $NICK \
