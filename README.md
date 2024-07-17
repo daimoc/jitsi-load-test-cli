@@ -58,7 +58,7 @@ Run the script with the required options:
 ### Example
 
 ```sh
-./jitsi-load-test-cli.sh --room "TestRoom" --instance "Instance1" --video-publishers 6 --audio-publishers 5 --subscribers 10 --duration 60 --token XXXXXXX
+./jitsi-load-test-cli.sh --room "bob0" --instance "Instance1" --video-publishers 6 --audio-publishers 5 --subscribers 10 --duration 60 --token XXXXXXX
 ```
 
 Result view from a browser user : 
@@ -109,7 +109,7 @@ This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENS
 
 ### Author
 
-- Your Name - [Damien Fetis](https://github.com/daimoc)
+- Damien Fetis [daimoc](https://github.com/daimoc)
 
 ### Acknowledgments
 
