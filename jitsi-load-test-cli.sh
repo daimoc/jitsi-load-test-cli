@@ -38,11 +38,9 @@ run_agent(){
     case "$TYPE" in
     "AUDIO")
         SENDER_PIPELINE=$AUDIO_SENDER_PIPELINE
-        LAST_N=0
         ;;
     "VIDEO")
         SENDER_PIPELINE=$VIDEO_SENDER_PIPELINE 
-        LAST_N=0
         ;;
     "SUBSCRIBER")
         ;;
