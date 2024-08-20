@@ -5,7 +5,7 @@ GST_IMAGE="daimoc/gst-meet"
 
 # Function to display usage instructions
 usage() {
-    echo "Usage: $0 --room ROOM --instance INSTANCE --video-publishers NUM --audio-publishers NUM --subscribers NUM --duration DURATION --media FILE --video-codec VIDEO_CODEC --token TOKEN --time_between_agent WAIT_TIME --last-n LAST_N"
+    echo "Usage: $0 --room ROOM --instance INSTANCE --video-publishers NUM --audio-publishers NUM --subscribers NUM --duration DURATION --media FILE --video-codec VIDEO_CODEC --token TOKEN --time_between_agent WAIT_TIME --last-n LAST_N --room-numbers NUM"
     echo
     echo " Mandatory Options : "
     echo "  --room                Name of the room"
@@ -15,11 +15,12 @@ usage() {
     echo "  --audio-publishers    Number of audio publishers"
     echo "  --subscribers         Number of subscribers"
     echo "  --duration            Duration of the test in seconds"
-    echo "  --time_between_agent  Wait time in seconds between 2 agent launch (default to 1)"
+    echo "  --time_between_agent  Wait time in seconds between 2 agent launch (default to 1 second)"
     echo "  --media               Name of the video file stored in media folder used for traffic generation"
     echo "  --video-codec         Video codec used by video sender agents. It must match your media file becaus we don't want codec transcription in a load testing tool (default to vp8)"
     echo "  --token               JWT token to run test on Jitsi-Meet with authentification enable"
     echo "  --last-n              Last-N value setting for subscribers to limit received video streams per subscribers (default to 25)"
+    echo "  --room-numbers        Number of rooms created for the test. Each room is named $room_$index and will have configured the same video-publishers, audio-publishers and  subscribers. By default only one room is created with name = $room"
   
     exit 1
 }
@@ -50,27 +51,55 @@ run_agent(){
         ;;
     esac
 
-    for i in `seq 1 $NUMBER`
-    do
-        NICK=$TYPE"_$i"
-        sleep $WAIT_TIME
-        docker run \
-        --net=host \
-        --mount type=bind,source="$(pwd)"/media,target=/media,ro \
-        $GST_IMAGE \
-        --video-codec=$VIDEO_CODEC \
-        --nick $NICK \
-        --last-n $LAST_N \
-        --room-name $ROOM \
-        --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
-        --xmpp-domain=$INSTANCE \
-        --verbose=0 \
-        --send-pipeline="$SENDER_PIPELINE" \
-        --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-        > /dev/null 2>&1 &
 
-        echo "Start agent" $NICK
-    done
+    if [[ $ROOM_NUMBERS -eq 0 ]]; then  
+        for i in `seq 1 $NUMBER`
+        do
+            NICK=$TYPE"_$i"
+            sleep $WAIT_TIME
+            docker run \
+            --net=host \
+            --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+            $GST_IMAGE \
+            --video-codec=$VIDEO_CODEC \
+            --nick $NICK \
+            --last-n $LAST_N \
+            --room-name $ROOM \
+            --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
+            --xmpp-domain=$INSTANCE \
+            --verbose=0 \
+            --send-pipeline="$SENDER_PIPELINE" \
+            --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
+            > /dev/null 2>&1 &
+
+            echo "Start agent" $NICK $ROOM
+        done
+    else
+        for j in `seq 1 $ROOM_NUMBERS`
+        do
+            ROOM_NAME=$ROOM"_"$j
+            for i in `seq 1 $NUMBER`
+            do
+                NICK=$TYPE"_$i"
+                sleep $WAIT_TIME
+                docker run \
+                --net=host \
+                --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                $GST_IMAGE \
+                --video-codec=$VIDEO_CODEC \
+                --nick $NICK \
+                --last-n $LAST_N \
+                --room-name $ROOM_NAME \
+                --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
+                --xmpp-domain=$INSTANCE \
+                --verbose=0 \
+                --send-pipeline="$SENDER_PIPELINE" \
+                --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
+                > /dev/null 2>&1 &
+                echo "Start agent" $NICK $ROOM_NAME
+            done
+        done
+    fi
 }
 
 stop_agents(){
@@ -101,6 +130,7 @@ TOKEN=""
 WAIT_TIME=1
 LAST_N=25
 VIDEO_CODEC="vp8"
+ROOM_NUMBERS=0
 
 # Parse command line arguments
 while [ "$1" != "" ]; do
@@ -138,6 +168,9 @@ while [ "$1" != "" ]; do
         --last-n )            shift
                               LAST_N=$1
                               ;;
+        --room_numbers )      shift
+                              ROOM_NUMBERS=$1
+                              ;;
         * )                   usage
                               exit 1
     esac
@@ -161,6 +194,8 @@ echo "Media File: $MEDIA"
 echo "JWT Token: $TOKEN"
 echo "Last-N : $LAST_N"
 echo "Video Codec: $VIDEO_CODEC"
+echo "Room Numbers: $ROOM_NUMBERS"
+
 
 echo "Running Jitsi-Meet load test using media file $MEDIA..."
 

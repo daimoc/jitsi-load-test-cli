@@ -74,7 +74,16 @@ Result view from a browser user :
 - `--subscribers` - Number of subscribers
 - `--duration` - Duration of the test in seconds
 - `--media` - Media file to use for publisher (it shoud be in webm format)
+- `--media` - Name of the video file stored in media folder used for traffic generation"
+- `--video-codec` - Video codec used by video sender agents. It must match your media file becaus we don't want codec transcription in a load testing tool (default to vp8)"
+- `--token` - JWT token to run test on Jitsi-Meet with authentification enable"
+- `--last-n` - Last-N value setting for subscribers to limit received video streams per subscribers (default to 25)"
+- `--room-numbers` - Number of rooms created for the test. Each room is named $room_$index and will have configured the same video-publishers, audio-publishers and  subscribers. By default only one room is created with name = $room"
+  
 
+### JWT Token Warning
+
+If you want to run your test with a Jitsi-Meet instaltion with JWT authentification enabaled you need to provide a valid token to the test-cli script. And if you need to use multiple room generation option (--room-numbers), you need a to token valid for all the rooms (room:* in the toekn payload).
 
 ### Media files
 
