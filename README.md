@@ -83,7 +83,7 @@ Result view from a browser user :
 
 ### JWT Token Warning
 
-If you want to run your test with a Jitsi-Meet instaltion with JWT authentification enabaled you need to provide a valid token to the test-cli script. And if you need to use multiple room generation option (--room-numbers), you need a to token valid for all the rooms (room:* in the toekn payload).
+If you want to run your test with a Jitsi-Meet instaltion with JWT authentification enabaled you need to provide a valid token to the test-cli script. And if you need to use multiple room generation option (--room-numbers), you need to provide a token valid for all the rooms (room:* in the toekn payload).
 
 ### Media files
 
