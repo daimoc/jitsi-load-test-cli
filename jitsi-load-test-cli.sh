@@ -44,6 +44,7 @@ run_agent(){
         SENDER_PIPELINE=$VIDEO_SENDER_PIPELINE 
         ;;
     "SUBSCRIBER")
+        unset SENDER_PIPELINE
         ;;
     *)
         echo "Invalid option: Agent $TYPE"
@@ -57,21 +58,40 @@ run_agent(){
         do
             NICK=$TYPE"_$i"
             sleep $WAIT_TIME
-            docker run \
-            --net=host \
-            --mount type=bind,source="$(pwd)"/media,target=/media,ro \
-            $GST_IMAGE \
-            --video-codec=$VIDEO_CODEC \
-            --nick $NICK \
-            --last-n $LAST_N \
-            --room-name $ROOM \
-            --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
-            --xmpp-domain=$INSTANCE \
-            --verbose=0 \
-            --send-pipeline="$SENDER_PIPELINE" \
-            --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-            > /dev/null 2>&1 &
 
+            if [ -z ${SENDER_PIPELINE+x} ]; 
+            then
+            # No sender Pipeline 
+            docker run \
+                --net=host \
+                --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                $GST_IMAGE \
+                --video-codec=$VIDEO_CODEC \
+                --nick $NICK \
+                --last-n $LAST_N \
+                --room-name $ROOM \
+                --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
+                --xmpp-domain=$INSTANCE \
+                --verbose=0 \
+                --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
+                > /dev/null 2>&1 &
+
+            else 
+            docker run \
+                --net=host \
+                --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                $GST_IMAGE \
+                --video-codec=$VIDEO_CODEC \
+                --nick $NICK \
+                --last-n $LAST_N \
+                --room-name $ROOM \
+                --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
+                --xmpp-domain=$INSTANCE \
+                --verbose=0 \
+                --send-pipeline="$SENDER_PIPELINE" \
+                --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
+                > /dev/null 2>&1 &
+            fi
             echo "Start agent" $NICK $ROOM
         done
     else
@@ -82,20 +102,39 @@ run_agent(){
             do
                 NICK=$TYPE"_$i"
                 sleep $WAIT_TIME
-                docker run \
-                --net=host \
-                --mount type=bind,source="$(pwd)"/media,target=/media,ro \
-                $GST_IMAGE \
-                --video-codec=$VIDEO_CODEC \
-                --nick $NICK \
-                --last-n $LAST_N \
-                --room-name $ROOM_NAME \
-                --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
-                --xmpp-domain=$INSTANCE \
-                --verbose=0 \
-                --send-pipeline="$SENDER_PIPELINE" \
-                --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-                > /dev/null 2>&1 &
+              
+                if [ -z ${SENDER_PIPELINE+x} ]; 
+                then
+                # No sender Pipeline 
+                    docker run \
+                    --net=host \
+                    --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                    $GST_IMAGE \
+                    --video-codec=$VIDEO_CODEC \
+                    --nick $NICK \
+                    --last-n $LAST_N \
+                    --room-name $ROOM_NAME \
+                    --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
+                    --xmpp-domain=$INSTANCE \
+                    --verbose=0 \
+                    --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
+                    > /dev/null 2>&1 &
+                else
+                     docker run \
+                    --net=host \
+                    --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                    $GST_IMAGE \
+                    --video-codec=$VIDEO_CODEC \
+                    --nick $NICK \
+                    --last-n $LAST_N \
+                    --room-name $ROOM_NAME \
+                    --web-socket-url wss://$INSTANCE/xmpp-websocket?room=$ROOM\&token=$TOKEN \
+                    --xmpp-domain=$INSTANCE \
+                    --verbose=0 \
+                    --send-pipeline="$SENDER_PIPELINE" \
+                    --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
+                    > /dev/null 2>&1 &
+                fi
                 echo "Start agent" $NICK $ROOM_NAME
             done
         done
