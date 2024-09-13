@@ -62,7 +62,7 @@ run_agent(){
             if [ -z ${SENDER_PIPELINE+x} ]; 
             then
             # No sender Pipeline 
-            docker run \
+            docker run -d \
                 --net=host \
                 --log-driver=none \
                 $GST_IMAGE \
@@ -74,10 +74,10 @@ run_agent(){
                 --xmpp-domain=$INSTANCE \
                 --verbose=0 \
                 --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-                > /dev/null 2>&1 &
+                > /dev/null 2>&1
 
             else 
-            docker run \
+            docker run -d \
                 --net=host \
                 --log-driver=none \
                 --mount type=bind,source="$(pwd)"/media,target=/media,ro \
@@ -91,7 +91,7 @@ run_agent(){
                 --verbose=0 \
                 --send-pipeline="$SENDER_PIPELINE" \
                 --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-                > /dev/null 2>&1 &
+                > /dev/null 2>&1
             fi
             echo "Start agent" $NICK $ROOM
         done
@@ -107,7 +107,7 @@ run_agent(){
                 if [ -z ${SENDER_PIPELINE+x} ]; 
                 then
                 # No sender Pipeline 
-                    docker run \
+                    docker run -d \
                     --net=host \
                     --log-driver=none \
                     $GST_IMAGE \
@@ -119,9 +119,9 @@ run_agent(){
                     --xmpp-domain=$INSTANCE \
                     --verbose=0 \
                     --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-                    > /dev/null 2>&1 &
+                    > /dev/null 2>&1
                 else
-                     docker run \
+                     docker run -d \
                     --net=host \
                     --log-driver=none \
                     --mount type=bind,source="$(pwd)"/media,target=/media,ro \
@@ -135,7 +135,7 @@ run_agent(){
                     --verbose=0 \
                     --send-pipeline="$SENDER_PIPELINE" \
                     --recv-pipeline-participant-template="$RECEIVER_PIPELINE" \
-                    > /dev/null 2>&1 &
+                    > /dev/null 2>&1
                 fi
                 echo "Start agent" $NICK $ROOM_NAME
             done
