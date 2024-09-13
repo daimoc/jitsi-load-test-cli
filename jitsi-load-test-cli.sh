@@ -64,7 +64,7 @@ run_agent(){
             # No sender Pipeline 
             docker run \
                 --net=host \
-                --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                --log-driver=none \
                 $GST_IMAGE \
                 --video-codec=$VIDEO_CODEC \
                 --nick $NICK \
@@ -79,6 +79,7 @@ run_agent(){
             else 
             docker run \
                 --net=host \
+                --log-driver=none \
                 --mount type=bind,source="$(pwd)"/media,target=/media,ro \
                 $GST_IMAGE \
                 --video-codec=$VIDEO_CODEC \
@@ -108,7 +109,7 @@ run_agent(){
                 # No sender Pipeline 
                     docker run \
                     --net=host \
-                    --mount type=bind,source="$(pwd)"/media,target=/media,ro \
+                    --log-driver=none \
                     $GST_IMAGE \
                     --video-codec=$VIDEO_CODEC \
                     --nick $NICK \
@@ -122,6 +123,7 @@ run_agent(){
                 else
                      docker run \
                     --net=host \
+                    --log-driver=none \
                     --mount type=bind,source="$(pwd)"/media,target=/media,ro \
                     $GST_IMAGE \
                     --video-codec=$VIDEO_CODEC \
